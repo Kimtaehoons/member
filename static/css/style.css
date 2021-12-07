@@ -10,7 +10,18 @@ nav ul li{
 }
 nav ul li:hover{background-color: #eee}
 nav ul li a{text-decoration: none; color: #000}
+
+/* index스타일 */
 section{text-align: center}
 section h2{margin-bottom: 20px}
 
-/* index스타일 */
+/* memberlist스타일 */
+section table{width: 600px; margin: 0 auto; border-collapse: collapse;}
+section h1{margin-bottom: 20px;}
+section table, th, td{border: 1px solid #ccc; padding: 10px;}
+section table th{background-color: #eee;}
+
+/* member_view스타일 */
+section .tbl_view{width: 450px;}
+section .tbl_view input{width: 200px, height: 30px;}
+
