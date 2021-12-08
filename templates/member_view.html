@@ -7,18 +7,9 @@
 </head>
 <body>
         <div id="container">
-            <header>
-                <nav>
-                    <ul>
-                        <li><a href="{{ url_for('index') }}">Home</a></li>
-                        <li><a href="#">로그인</a></li>
-                        <li><a href="#">회원가입</a></li>
-                        <li><a href="{{ url_for('memberlist') }}">회원목록</a></li>
-                    </ul>
-                </nav>
-            </header>
+            {% include 'navbar.html' %}
             <section>
-                <h1>회원 정보</h1>
+                <h1>회원정보</h1>
                 <table class="tbl_view"> <!-- 보낸 rs자료를 if문으로 받아줘야함 -->
                     <colgroup>
                         <col style="background-color: #eee">
