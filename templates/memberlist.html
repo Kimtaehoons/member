@@ -7,28 +7,34 @@
 </head>
 <body>
     <div id="container">
-            {% include 'navbar.html' %}
-            <section>
-                <h1>회원목록</h1>
-                <table>
-                    <tr>
-                        <th>아이디</th>
-                        <th>패스워드</th>
-                        <th>이름</th>
-                        <th>나이</th>
-                        <th>가입일</th>
-                    </tr>
-                    {% for i in rs %}
-                    <tr>
-                        <td><a href="{{ url_for('member_view', id=i[0]) }}">{{ i[0] }}</a></td> <!-- member_view로 가는데 해당하는 id값만 가져감 -->
-                        <td>{{ i[1] }}</td>
-                        <td>{{ i[2] }}</td>
-                        <td>{{ i[3] }}</td>
-                        <td>{{ i[4] }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </section>
-        </div>
+        {% if ssid == null %} <!-- session이 없다면 즉, 로그인하지 않으면(ssid로 넘겨받은 것이 없으면) -->
+        <script>
+            alert('먼저 로그인 해주세요');
+            location.href = '/login/';
+        </script>
+        {% endif %}
+        {% include 'navbar.html' %}
+        <section>
+            <h1>회원목록</h1>
+            <table>
+                <tr>
+                    <th>아이디</th>
+                    <th>패스워드</th>
+                    <th>이름</th>
+                    <th>나이</th>
+                    <th>가입일</th>
+                </tr>
+                {% for i in rs %}
+                <tr>
+                    <td><a href="{{ url_for('member_view', id=i[0]) }}">{{ i[0] }}</a></td> <!-- member_view로 가는데 해당하는 id값만 가져감 -->
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                    <td>{{ i[3] }}</td>
+                    <td>{{ i[4] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+    </div>
 </body>
 </html>
