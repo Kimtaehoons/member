@@ -51,17 +51,23 @@ def register():
         pwd = request.form['passwd']
         name = request.form['name']
         age = request.form['age']
-        date = request.form['regDate']
+        #date = request.form['regDate'] #수동입력이 아닌 가입 시 자동 생성을 위함
 
         conn = getconn() #담은 것을 db에 연결
         cur = conn.cursor()
-        sql = "INSERT INTO member VALUES ('%s', '%s', '%s', '%s', '%s')" \
-              % (id, pwd, name, age, date)
-
+        sql = "INSERT INTO member(mid, passwd, name, age) VALUES ('%s', '%s', '%s', '%s')" \
+              % (id, pwd, name, age)
+        #회원 가입
         cur.execute(sql) #실행
         conn.commit() #커밋 완료
+        #가입 후 자동 로그인
+        sql = "SELECT * FROM member WHERE mid = '%s' " % (id)
+        cur.execute(sql)
+        rs = cur.fetchone()
         conn.close()
-        return redirect(url_for('memberlist')) #회원목록으로 넘어가도록 url경로 지정(확장자 제외)
+        if rs:
+            session['userID'] = id
+            return redirect(url_for('memberlist')) #회원목록으로 넘어가도록 url경로 지정(확장자 제외)
     else:
         return render_template('register.html') #GET방식으로 요청(회원가입 페이지 노출)
 
@@ -88,7 +94,8 @@ def login():
 
 @app.route('/logout/')
 def logout(): #페이지 생성하지 않음
-    session.pop('userID') #세션 권한 삭제
+    #session.pop('userID') #userID세션만 권한 삭제
+    session.clear() #전체 섹션 삭제
     return redirect(url_for('index'))
 
 @app.route('/member_del/<string:id>/') #삭제 url생성
@@ -105,7 +112,7 @@ def member_del(id): #(m)id를 매개변수로 넘겨줌
 def member_edit(id):
     if request.method == "POST":
         #회원정보에서 수정된 자료 넘겨 받음
-        id = request.form['mid']  # 자료 수집(register에 mid를 받아서 변수 id에 담음)
+        id = request.form['mid']  #자료 수집(register에 mid를 받아서 변수 id에 담음)
         pwd = request.form['passwd']
         name = request.form['name']
         age = request.form['age']

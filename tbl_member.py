@@ -44,6 +44,15 @@ def select_member(): #db브라우저에서 확인 안 하고자
         print(i)
     conn.close() #commit이 필요없음
 
+def delete_member(): #db전체 데이터 삭제
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "DELETE FROM member"
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
+
 #create_table() #호출, 테이블 생성된 것을 db브라우저에서 확인 가능, 처음할 때만 열고 다음부터는 막아준다
 #insert_member()
 select_member()
+delete_member()
