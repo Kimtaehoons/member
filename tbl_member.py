@@ -14,7 +14,7 @@ def create_table():
         passwd CHAR(8) NOT NULL,
         name TEXT NOT NULL,
         age INTEGER,
-        regDate DATETIME DEFAULT CURRENT_TIMESTAMP
+        regDate TIMESTAMP DATE DEFAULT (datetime('now', 'localtime'))
     );
     """
     #regDate는 파이참의 현재날짜와 같이 자동생성되는 것
@@ -23,11 +23,19 @@ def create_table():
     print("member테이블 생성") #호출 하기 전에 생성해서 파이참 콘솔창에서 확인 용도
     conn.close()
 
+def drop_table(): #삭제를 해야 고칠 수 있기 때문
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "DROP TABLE member"
+    cur.execute(sql) #sql에서 코드문 실행
+    conn.commit() #db에서 실행
+    conn.close()
+
 def insert_member():
     conn = getconn()
     cur = conn.cursor()
     sql = "INSERT INTO member (mid, passwd, name, age) VALUES (?, ?, ?, ?)" #regDate는 자동생성되는 것으로 입력제외 처리(나머지 것만 입력되도록 설정), 예외사항 없을 시 칼럼명 생략 가능
-    cur.execute(sql, ('20001', 'm1234', '흥부', 35)) #id는 문자로 하는 것이 처리하는데 오류가 줄어듦
+    cur.execute(sql, ('cloud', 'm123456!', '하늘', 35)) #id는 문자로 하는 것이 처리하는데 오류가 줄어듦
     conn.commit()
     print("멤버 추가") #호출 하기 전에 생성해서 파이참 콘솔창에서 확인 용도
     conn.close()
@@ -53,6 +61,7 @@ def delete_member(): #db전체 데이터 삭제
     conn.close()
 
 #create_table() #호출, 테이블 생성된 것을 db브라우저에서 확인 가능, 처음할 때만 열고 다음부터는 막아준다
-#insert_member()
+#drop_table()
+insert_member()
 select_member()
-delete_member()
+#delete_member()

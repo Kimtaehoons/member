@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 쓰기(boardlist와 연동, 회원가입처럼 어떠한 동작 후에 링크연동으로 페이지 생성)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="container">
+        {% include 'navbar.html' %}
+        <section>
+            <h1>게시글 쓰기</h1>
+            <form action="{{ url_for('writing') }}" method="post" class="writing">
+                <table>
+                    <tr>
+                        <td>
+                            <input type="text" name="title" placeholder="글제목">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea name="content" placeholder="글내용"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="submit" value="글쓰기">
+                            <input type="reset" value="취소">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

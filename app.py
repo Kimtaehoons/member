@@ -10,10 +10,11 @@ def getconn():
 
 @app.route('/') #127.0.0.1:/5000
 def index():
-    if 'userID' in session: #session에 userID가 존재하면(로그인 현상 유지 확인을 위해 로그인 id보이게 하기)
-        ssid = session.get('userID') #session을 가져와서
-        return render_template('index.html', ssid=ssid) #index페이지로 보내준다(navbar연동 포함)
-    else:
+    #이미 아래 로그인과 레지스터에서 session이 발급됐으므로 코드 최적화를 위함(발급 중복 이하 동일)
+    #if 'userID' in session: #session에 userID가 존재하면(로그인 현상 유지 확인을 위해 로그인 id보이게 하기)
+        #ssid = session.get('userID') #session을 가져와서
+        #return render_template('index.html', ssid=ssid) #index페이지로 보내준다(navbar연동 포함)
+    #else:
         return render_template('index.html') #GET방식으로 session이 없으면 index페이지로
 
 @app.route('/memberlist/')
@@ -24,11 +25,12 @@ def memberlist():
     cur.execute(sql)
     rs = cur.fetchall() #db에서 검색한 데이터
     conn.close()
-    if 'userID' in session:
-        ssid = session.get('userID')
-        return render_template('memberlist.html', ssid=ssid, rs=rs)
-    else:
-        return render_template('memberlist.html') #가져온 데이터를 웹으로 보내줌
+    #if 'userID' in session:
+        #ssid = session.get('userID')
+        #return render_template('memberlist.html', ssid=ssid, rs=rs)
+    #else:
+        #return render_template('memberlist.html', rs=rs) #가져온 데이터를 웹으로 보내줌
+    return render_template('memberlist.html', rs=rs) #가져온 데이터를 웹으로 보내줌
 
 @app.route('/member_view/<string:id>/')
 def member_view(id): #mid를 경로로 설정하고 매개변수로 넘겨줌
@@ -38,11 +40,8 @@ def member_view(id): #mid를 경로로 설정하고 매개변수로 넘겨줌
     cur.execute(sql)
     rs = cur.fetchone()
     conn.close()
-    if 'userID' in session:
-        ssid = session.get('userID')
-        return render_template('member_view.html', ssid=ssid, rs=rs)
-    else:
-        return render_template('member_view.html')
+    #위에서 시행한 기 발급된 if, else를 통한 session발급내용 삭제 후(위에서는 해당 부분 주석 처리함) member_view.html에서 ['userID']를 심어 놓음
+    return render_template('member_view.html', rs=rs)
 
 @app.route('/register/', methods = ['GET', 'POST']) #url경로
 def register():
@@ -51,11 +50,11 @@ def register():
         pwd = request.form['passwd']
         name = request.form['name']
         age = request.form['age']
-        #date = request.form['regDate'] #수동입력이 아닌 가입 시 자동 생성을 위함
+        #date = request.form['regDate'] #수동입력이 아닌 가입 시 자동 생성에 따른 삭제(register.html에서 삭제)
 
         conn = getconn() #담은 것을 db에 연결
         cur = conn.cursor()
-        sql = "INSERT INTO member(mid, passwd, name, age) VALUES ('%s', '%s', '%s', '%s')" \
+        sql = "INSERT INTO member(mid, passwd, name, age) VALUES ('%s', '%s', '%s', %s)" \
               % (id, pwd, name, age)
         #회원 가입
         cur.execute(sql) #실행
@@ -120,8 +119,8 @@ def member_edit(id):
         #db 연결
         conn = getconn()
         cur = conn.cursor()
-        sql = "UPDATE member SET passwd = '%s', name = '%s', age = '%s', regDate = '%s' " \
-              "WHERE mid = '%s' " % (pwd, name, age, date, id)
+        sql = "UPDATE member SET passwd = '%s', name = '%s', age = %s " \
+              "WHERE mid = '%s' " % (pwd, name, age, id)
         cur.execute(sql)  # 실행
         conn.commit()  # 커밋 완료
         conn.close()
@@ -133,10 +132,41 @@ def member_edit(id):
         cur.execute(sql)
         rs = cur.fetchone()
         conn.close()
-        if 'userID' in session:
-            ssid = session.get('userID')
-            return render_template('member_edit.html', rs=rs, ssid=ssid) #정보를 rs로 받아서 가져옴
-        else:
-            return render_template('member_edit.html')
+        #if 'userID' in session:
+            #ssid = session.get('userID')
+            #return render_template('member_edit.html', rs=rs, ssid=ssid) #정보를 rs로 받아서 가져옴
+        #else:
+            #return render_template('member_edit.html')
+        return render_template('member_edit.html', rs=rs)
+
+@app.route('/boardlist/')
+def boardlist():
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "SELECT * FROM board ORDER BY bno DESC"
+    cur.execute(sql)
+    rs = cur.fetchall()
+    conn.close()
+    return render_template('boardlist.html', rs=rs)
+
+@app.route('/writing/', methods = ['GET', 'POST'])
+def writing():
+    if request.method == "POST":
+        #자료 전달받음
+        title = request.form['title']
+        content = request.form['content']
+        mid = session.get('userID') #mid값은 세션 권한이 있는(로그인 한) 사람이 글쓴이로 세션의 id값을 가져옴
+        #db에 글제목, 글내용 추가
+        conn = getconn()
+        cur = conn.cursor()
+        sql = "INSERT INTO board(title, content, mid) VALUES ('%s', '%s', '%s') " % \
+              (title, content, mid)
+        cur.execute(sql)
+        conn.commit()
+        print("게시글 추가")
+        conn.close()
+        return redirect(url_for('boardlist'))
+    else:
+        return render_template('writing.html')
 
 app.run(debug=True)
