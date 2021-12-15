@@ -65,7 +65,8 @@ def register():
         rs = cur.fetchone()
         conn.close()
         if rs:
-            session['userID'] = id
+            session['userID'] = rs[0] #아이디 세션 발급
+            session['userName'] = rs[2] #이름 세션 발급
             return redirect(url_for('memberlist')) #회원목록으로 넘어가도록 url경로 지정(확장자 제외)
     else:
         return render_template('register.html') #GET방식으로 요청(회원가입 페이지 노출)
@@ -83,7 +84,9 @@ def login():
         rs = cur.fetchone() #db에서 찾은 그 데이터 한 개
         conn.close()
         if rs:
-            session['userID'] = id #session권한 발급(로그인이 되면 자유롭게 이동할 수 있는 권리 부여)
+            #session권한 발급(로그인이 되면 자유롭게 이동할 수 있는 권리 부여)
+            session['userID'] = rs[0]
+            session['userName'] = rs[2]
             return redirect(url_for('index'))
         else:
             error = "아이디나 비밀번호가 일치하지 않습니다"
@@ -155,7 +158,7 @@ def writing():
         #자료 전달받음
         title = request.form['title']
         content = request.form['content']
-        mid = session.get('userID') #mid값은 세션 권한이 있는(로그인 한) 사람이 글쓴이로 세션의 id값을 가져옴
+        mid = session.get('userName') #mid값은 세션 권한이 있는(로그인 한) 사람이 글쓴이로 세션의 id값을 가져옴
         #db에 글제목, 글내용 추가
         conn = getconn()
         cur = conn.cursor()
@@ -178,5 +181,40 @@ def board_view(bno):
     rs = cur.fetchone()
     conn.close()
     return render_template('board_view.html', rs=rs)
+
+@app.route('/board_del/<int:bno>/')
+def board_del(bno):
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "DELETE FROM board WHERE bno = %s" % (bno)
+    cur.execute(sql) #삭제 실행
+    conn.commit() #트랜젝션(커밋) 완료
+    conn.close()
+    return redirect(url_for('boardlist')) #삭제이므로 별도의 html로 페이지 생성 필요가 없음
+
+@app.route('/board_edit/<int:bno>/', methods=['GET', 'POST'])
+def board_edit(bno):
+    if request.method == "POST":
+        #자료 전달 받음
+        title = request.form['title']
+        content = request.form['content']
+        mid = session.get('userName') #자동 입력
+        #db update(member_edit과 작동방식 유사)
+        conn = getconn()
+        cur = conn.cursor()
+        sql = "UPDATE board SET title = '%s', content = '%s', mid = '%s' WHERE bno = %s" \
+              % (title, content, mid, bno)
+        cur.execute(sql) #실행
+        conn.commit() #커밋 완료
+        conn.close()
+        return redirect(url_for('board_view', bno=bno))
+    else: #GET방식(board_view와 동일)
+        conn = getconn()
+        cur = conn.cursor()
+        sql = "SELECT * FROM board WHERE bno = %s" % (bno)
+        cur.execute(sql)
+        rs = cur.fetchone()
+        conn.close()
+        return render_template('board_edit.html', rs=rs) #html에서 url_for('board_edit', bno=rs[0])와 같은 것
 
 app.run(debug=True)
