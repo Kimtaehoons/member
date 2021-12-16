@@ -23,6 +23,8 @@ def create_table():
     print("member테이블 생성") #호출 하기 전에 생성해서 파이참 콘솔창에서 확인 용도
     conn.close()
 
+
+
 def drop_table(): #삭제를 해야 고칠 수 있기 때문
     conn = getconn()
     cur = conn.cursor()
@@ -62,6 +64,6 @@ def delete_member(): #db전체 데이터 삭제
 
 #create_table() #호출, 테이블 생성된 것을 db브라우저에서 확인 가능, 처음할 때만 열고 다음부터는 막아준다
 #drop_table()
-insert_member()
-select_member()
+#insert_member()
+#select_member()
 #delete_member()

@@ -11,7 +11,8 @@
         <section>
             <h1>회원관리 커뮤니티입니다</h1>
             <h2>Have a Nice Day!!</h2>
-            <img src="{{ url_for('static', filename='images/activity.jpg') }}" id="pic"> <!-- js에 연동시키기 위해 id생성 -->
+            <img src="{{ url_for('static', filename='images/activity.jpg') }}" id="pic"> <!-- 마우스이벤트 js에 연동시키기 위해 id생성 -->
+            <p id="demo"></p> <!-- 디지털 시계 js에 연동시키기 위해 id생성 -->
         </section>
     </div>
     <script src="{{ url_for('static', filename='js/main_js.js') }}"></script>

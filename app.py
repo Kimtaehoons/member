@@ -158,15 +158,15 @@ def writing():
         #자료 전달받음
         title = request.form['title']
         content = request.form['content']
+        hit = 0
         mid = session.get('userName') #mid값은 세션 권한이 있는(로그인 한) 사람이 글쓴이로 세션의 id값을 가져옴
         #db에 글제목, 글내용 추가
         conn = getconn()
         cur = conn.cursor()
-        sql = "INSERT INTO board(title, content, mid) VALUES ('%s', '%s', '%s') " % \
-              (title, content, mid)
+        sql = "INSERT INTO board(title, content, hit, mid) VALUES ('%s', '%s', %s, '%s') " % \
+              (title, content, hit, mid)
         cur.execute(sql)
         conn.commit()
-        print("게시글 추가")
         conn.close()
         return redirect(url_for('boardlist'))
     else:
@@ -179,6 +179,12 @@ def board_view(bno):
     sql = "SELECT * FROM board WHERE bno = %s" % (bno)
     cur.execute(sql)
     rs = cur.fetchone()
+    #조회수 증가
+    hit = rs[4] #hit = 0
+    hit = hit + 1
+    sql = "UPDATE board SET hit = %s WHERE bno = %s" % (hit, bno)
+    cur.execute(sql)
+    conn.commit()
     conn.close()
     return render_template('board_view.html', rs=rs)
 

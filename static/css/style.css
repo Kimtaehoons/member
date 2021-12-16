@@ -13,7 +13,9 @@ nav ul li a{text-decoration: none; color: #000}
 
 /* index스타일 */
 section{text-align: center}
-section h2{margin-bottom: 20px}
+section h1{font-size:2em; color:#00f;}
+section h2{margin-bottom: 20px;}
+section p{margin-top: 10px;}
 
 /* memberlist스타일 */
 section table{width: 600px; margin: 0 auto; border-collapse: collapse;}
